@@ -21,7 +21,14 @@ async def get_repository():
 async def get_all_prices(ticker: str, repository: PriceRepository = Depends(get_repository)):
     use_case = GetAllPricesUseCase(repository)
     prices = await use_case.execute(ticker)
-    return [PriceResponse(ticker=p.ticker, price=p.price, timestamp=p.timestamp) for p in prices]
+    result = []
+    for price in prices:
+        result.append(PriceResponse(
+            ticker=price.ticker,
+            price=price.price,
+            timestamp=price.timestamp
+        ))
+    return result
 
 
 @router.get("/last", response_model=PriceResponse)

@@ -1,4 +1,5 @@
 import aiohttp
+import time
 from typing import Optional
 from src.domain.models import Price
 
@@ -34,25 +35,23 @@ class DeribitClient:
             return None
 
     async def get_btc_price(self) -> Optional[Price]:
-        price = await self.get_index_price("btc_usd")
-        if price is None:
+        price_value = await self.get_index_price("btc_usd")
+        if price_value is None:
             return None
         
-        import time
         return Price(
             ticker="BTC_USD",
-            price=price,
+            price=price_value,
             timestamp=int(time.time())
         )
 
     async def get_eth_price(self) -> Optional[Price]:
-        price = await self.get_index_price("eth_usd")
-        if price is None:
+        price_value = await self.get_index_price("eth_usd")
+        if price_value is None:
             return None
         
-        import time
         return Price(
             ticker="ETH_USD",
-            price=price,
+            price=price_value,
             timestamp=int(time.time())
         )
