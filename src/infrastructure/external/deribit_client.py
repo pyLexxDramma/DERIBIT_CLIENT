@@ -31,7 +31,8 @@ class DeribitClient:
                     data = await response.json()
                     result = data.get("result")
                     if result:
-                        return result.get("index_price")
+                        price = result.get("index_price")
+                        return price
                 return None
         except Exception:
             return None

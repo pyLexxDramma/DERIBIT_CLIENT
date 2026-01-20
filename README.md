@@ -45,6 +45,27 @@ Docker Compose включает:
 - `GET /api/prices/last?ticker={ticker}` - получить последнюю цену валюты
 - `GET /api/prices/by-date?ticker={ticker}&date={timestamp}` - получить цену по дате
 
+## Проверка работоспособности
+
+**Через Docker:**
+- API: http://localhost:8000/docs (Swagger UI)
+- Проверка статуса: `docker-compose ps`
+- Логи: `docker-compose logs -f`
+- БД: `docker-compose exec db psql -U deribit_user -d deribit_db -c "SELECT * FROM prices LIMIT 5;"`
+- Celery: `docker-compose logs -f celery`
+
+**Unit тесты:**
+```bash
+docker-compose exec api pytest tests/ -v
+```
+
+**Проверка endpoints через curl:**
+```bash
+curl "http://localhost:8000/api/prices/all?ticker=BTC_USD"
+curl "http://localhost:8000/api/prices/last?ticker=BTC_USD"
+curl "http://localhost:8000/api/prices/by-date?ticker=BTC_USD&date=1768910133"
+```
+
 ## Design Decisions
 
 **Clean Architecture**: Проект разделен на слои (domain, application, infrastructure, presentation) для изоляции бизнес-логики от деталей реализации. Это упрощает тестирование и замену компонентов.
