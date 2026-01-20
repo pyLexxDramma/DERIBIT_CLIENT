@@ -16,11 +16,11 @@ celery_app = Celery(
 def fetch_prices():
     import asyncio
     
-    async def _fetch():
-        db = Database()
-        client = DeribitClient()
-        repo = PriceRepository(db)
-        
+    db = Database()
+    client = DeribitClient()
+    repo = PriceRepository(db)
+    
+    async def fetch_and_save():
         try:
             await db.connect()
             await repo.create_table_if_not_exists()
@@ -36,7 +36,11 @@ def fetch_prices():
             await client.close()
             await db.close()
     
-    asyncio.run(_fetch())
+    loop = asyncio.get_event_loop()
+    if loop.is_closed():
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+    loop.run_until_complete(fetch_and_save())
 
 
 @celery_app.on_after_configure.connect
