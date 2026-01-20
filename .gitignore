@@ -32,6 +32,7 @@ ENV/
 *.swp
 *.swo
 *~
+*.iml
 
 # Environment variables
 .env
@@ -57,3 +58,17 @@ htmlcov/
 
 # Migrations (если используем Alembic)
 alembic.ini
+
+# Temporary scripts and files
+*.ps1.bak
+*.sh.bak
+*.tmp
+fix_*.ps1
+fix_*.sh
+temp_*
+*.bak
+*.orig
+
+# Git hooks (не коммитим настройки hooks, только документацию)
+# .git/hooks/ уже в .git, не нужно добавлять
+setup_git_hooks.ps1
