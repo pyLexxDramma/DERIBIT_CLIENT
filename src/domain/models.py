@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import Literal
 
-
 Ticker = Literal["BTC_USD", "ETH_USD"]
 
 

@@ -1,0 +1,3 @@
+from src.infrastructure.tasks.fetch_prices import celery_app
+
+__all__ = ["celery_app"]

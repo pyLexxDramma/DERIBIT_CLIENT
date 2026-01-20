@@ -1,9 +1,10 @@
-from celery import Celery
-from src.infrastructure.external.deribit_client import DeribitClient
-from src.infrastructure.database.connection import Database
-from src.infrastructure.database.repositories.price_repository import PriceRepository
 import os
 
+from celery import Celery
+
+from src.infrastructure.database.connection import Database
+from src.infrastructure.database.repositories.price_repository import PriceRepository
+from src.infrastructure.external.deribit_client import DeribitClient
 
 celery_app = Celery(
     "deribit_client",
@@ -15,32 +16,35 @@ celery_app = Celery(
 @celery_app.task
 def fetch_prices():
     import asyncio
-    
-    db = Database()
-    client = DeribitClient()
-    repo = PriceRepository(db)
-    
+
     async def fetch_and_save():
+        db = Database()
+        client = DeribitClient()
+        repo = PriceRepository(db)
+
         try:
             await db.connect()
             await repo.create_table_if_not_exists()
-            
+
             btc_price = await client.get_btc_price()
             if btc_price:
                 await repo.save(btc_price)
-            
+
             eth_price = await client.get_eth_price()
             if eth_price:
                 await repo.save(eth_price)
         finally:
             await client.close()
             await db.close()
-    
-    loop = asyncio.get_event_loop()
-    if loop.is_closed():
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-    loop.run_until_complete(fetch_and_save())
+
+    try:
+        loop = asyncio.get_event_loop()
+        if loop.is_closed():
+            asyncio.run(fetch_and_save())
+        else:
+            loop.run_until_complete(fetch_and_save())
+    except RuntimeError:
+        asyncio.run(fetch_and_save())
 
 
 @celery_app.on_after_configure.connect

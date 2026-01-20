@@ -1,4 +1,5 @@
 from typing import Optional
+
 from src.domain.models import Price
 from src.infrastructure.database.repositories.price_repository import PriceRepository
 

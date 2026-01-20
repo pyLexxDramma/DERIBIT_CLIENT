@@ -1,5 +1,5 @@
-import asyncpg
 from typing import List, Optional
+
 from src.domain.models import Price
 from src.infrastructure.database.connection import Database
 

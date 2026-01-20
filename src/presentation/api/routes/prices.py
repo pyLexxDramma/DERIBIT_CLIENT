@@ -1,20 +1,19 @@
-from fastapi import APIRouter, Depends, HTTPException
 from typing import List
+
+from fastapi import APIRouter, Depends, HTTPException, Request
+
 from src.application.use_cases.get_all_prices import GetAllPricesUseCase
 from src.application.use_cases.get_last_price import GetLastPriceUseCase
 from src.application.use_cases.get_price_by_date import GetPriceByDateUseCase
-from src.infrastructure.database.connection import Database
 from src.infrastructure.database.repositories.price_repository import PriceRepository
 from src.presentation.schemas.price_schemas import PriceResponse
 
 router = APIRouter()
 
-_db = Database()
 
-
-async def get_repository():
-    await _db.connect()
-    return PriceRepository(_db)
+async def get_repository(request: Request) -> PriceRepository:
+    db = request.app.state.db
+    return PriceRepository(db)
 
 
 @router.get("/all", response_model=List[PriceResponse])
@@ -42,9 +41,9 @@ async def get_last_price(ticker: str, repository: PriceRepository = Depends(get_
 
 @router.get("/by-date", response_model=PriceResponse)
 async def get_price_by_date(
-    ticker: str,
-    date: int,
-    repository: PriceRepository = Depends(get_repository)
+        ticker: str,
+        date: int,
+        repository: PriceRepository = Depends(get_repository)
 ):
     use_case = GetPriceByDateUseCase(repository)
     price = await use_case.execute(ticker, date)

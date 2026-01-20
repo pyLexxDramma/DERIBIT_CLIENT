@@ -1,4 +1,5 @@
 from typing import List
+
 from src.domain.models import Price
 from src.infrastructure.database.repositories.price_repository import PriceRepository
 
