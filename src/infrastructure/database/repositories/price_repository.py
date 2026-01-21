@@ -40,14 +40,14 @@ class PriceRepository:
                 "SELECT ticker, price, timestamp FROM prices WHERE ticker = $1 ORDER BY timestamp DESC",
                 ticker
             )
-            result = []
+            price_list = []
             for row in rows:
-                result.append(Price(
+                price_list.append(Price(
                     ticker=row["ticker"],
                     price=float(row["price"]),
                     timestamp=row["timestamp"]
                 ))
-            return result
+            return price_list
 
     async def get_last_by_ticker(self, ticker: str) -> Optional[Price]:
         pool = await self.db.get_pool()

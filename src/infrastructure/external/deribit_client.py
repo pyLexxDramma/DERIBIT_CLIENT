@@ -1,3 +1,4 @@
+import asyncio
 import time
 from typing import Optional
 
@@ -28,33 +29,33 @@ class DeribitClient:
         try:
             async with session.get(url, params=params) as response:
                 if response.status == 200:
-                    data = await response.json()
-                    result = data.get("result")
-                    if result:
-                        price = result.get("index_price")
-                        return price
+                    api_response = await response.json()
+                    index_data = api_response.get("result")
+                    if index_data:
+                        index_price = index_data.get("index_price")
+                        return index_price
                 return None
-        except Exception:
+        except (aiohttp.ClientError, asyncio.TimeoutError):
             return None
 
     async def get_btc_price(self) -> Optional[Price]:
-        price_value = await self.get_index_price("btc_usd")
-        if price_value is None:
+        index_price = await self.get_index_price("btc_usd")
+        if not index_price:
             return None
 
         return Price(
             ticker="BTC_USD",
-            price=price_value,
+            price=index_price,
             timestamp=int(time.time())
         )
 
     async def get_eth_price(self) -> Optional[Price]:
-        price_value = await self.get_index_price("eth_usd")
-        if price_value is None:
+        index_price = await self.get_index_price("eth_usd")
+        if not index_price:
             return None
 
         return Price(
             ticker="ETH_USD",
-            price=price_value,
+            price=index_price,
             timestamp=int(time.time())
         )
